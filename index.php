@@ -38,30 +38,51 @@
                     require_once "config.php";
                     
                     // Attempt select query execution
-                    $sql = "SELECT * FROM employee";
+                    $sql = "SELECT
+    orderNumber,
+    orderDate,
+    orderLineNumber,
+    productName,
+    quantityOrdered,
+    priceEach,
+    productCode
+FROM
+    orders
+INNER JOIN
+    orderdetails USING (orderNumber)
+INNER JOIN
+    products USING (productCode)
+ORDER BY
+    orderNumber,
+    orderLineNumber
+";
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
                             echo "<table class='table table-bordered table-striped'>";
                                 echo "<thead>";
                                     echo "<tr>";
-                                        echo "<th>#</th>";
-                                        echo "<th>Name</th>";
-                                        echo "<th>Address</th>";
-                                        echo "<th>Salary</th>";
-                                        echo "<th>Action</th>";
+                                        echo "<th>Order Number</th>";
+                                        echo "<th>Order Date</th>";
+                                        echo "<th>Order LineNumber</th>";
+                                        echo "<th>Product Number</th>";
+                                        echo "<th>Quantity Ordered</th>";
+                                        echo "<th>Price Each</th>";
+                                        echo "<th>Actions</th>";
                                     echo "</tr>";
                                 echo "</thead>";
                                 echo "<tbody>";
                                 while($row = mysqli_fetch_array($result)){
                                     echo "<tr>";
-                                        echo "<td>" . $row['id'] . "</td>";
-                                        echo "<td>" . $row['name'] . "</td>";
-                                        echo "<td>" . $row['address'] . "</td>";
-                                        echo "<td>" . $row['salary'] . "</td>";
+                                        echo "<td>" . $row['orderNumber'] . "</td>";
+                                        echo "<td>" . $row['orderDate'] . "</td>";
+                                        echo "<td>" . $row['orderLineNumber'] . "</td>";
+                                        echo "<td>" . $row['productName'] . "</td>";
+                                        echo "<td>" . $row['quantityOrdered'] . "</td>";
+                                        echo "<td>" . $row['priceEach'] . "</td>";
                                         echo "<td>";
-                                            echo "<a href='read.php?id=". $row['id'] ."' title='View Record' data-toggle='tooltip'><span class='glyphicon glyphicon-eye-open'></span></a>";
-                                            echo "<a href='update.php?id=". $row['id'] ."' title='Update Record' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
-                                            echo "<a href='delete.php?id=". $row['id'] ."' title='Delete Record' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
+                                            echo "<a href='read.php?orderNumber=". $row['orderNumber'] ."&productCode=". $row['productCode'] ."' title='View Record' data-toggle='tooltip'><span class='glyphicon glyphicon-eye-open'></span></a>";
+                                            echo "<a href='update.php?orderNumber=". $row['orderNumber'] ."&productCode=". $row['productCode'] ."' title='Update Record' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
+                                            echo "<a href='delete.php?orderNumber=". $row['orderNumber'] ."&productCode=". $row['productCode']."' title='Delete Record' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
                                         echo "</td>";
                                     echo "</tr>";
                                 }

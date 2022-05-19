@@ -1,21 +1,42 @@
 <?php
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 // Check existence of id parameter before processing further
-if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
+if(isset($_GET["orderNumber"]) && !empty(trim($_GET["orderNumber"]))){
     // Include config file
     require_once "config.php";
     
     // Prepare a select statement
-    $sql = "SELECT * FROM employee WHERE id = ?";
+    $sql = "SELECT
+    orderNumber,
+    orderDate,
+    orderLineNumber,
+    productName,
+    quantityOrdered,
+    priceEach
+FROM
+    orders
+INNER JOIN
+    orderdetails USING (orderNumber)
+INNER JOIN
+    products USING (productCode)
+WHERE
+orderNumber=".$_GET['orderNumber']." AND productCode='".$_GET['productCode']."'";
     
     if($stmt = mysqli_prepare($link, $sql)){
+//$stmt = mysqli_prepare($link, $sql);
+$p1 = trim($_GET["orderNumber"]);
+$p2 = trim($_GET["productCode"]);
         // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "i", $param_id);
+        mysqli_stmt_bind_param($stmt, "is", $p1,$p2);
         
         // Set parameters
-        $param_id = trim($_GET["id"]);
+        
         
         // Attempt to execute the prepared statement
-        if(mysqli_stmt_execute($stmt)){
+        //if(mysqli_stmt_execute($stmt)){
+        mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
     
             if(mysqli_num_rows($result) == 1){
@@ -24,14 +45,14 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
                 $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
                 
                 // Retrieve individual field value
-                $name = $row["name"];
-                $address = $row["address"];
-                $salary = $row["salary"];
-            } else{
+                $name = $row["orderNumber"];
+                $address = $row["orderDate"];
+                $salary = $row["orderLineNumber"];
+            //} else{
                 // URL doesn't contain valid id parameter. Redirect to error page
-                header("location: error.php");
-                exit();
-            }
+              //  header("location: error.php");
+               // exit();
+            //}
             
         } else{
             echo "Oops! Something went wrong. Please try again later.";
@@ -71,17 +92,30 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
                         <h1>View Record</h1>
                     </div>
                     <div class="form-group">
-                        <label>Name</label>
-                        <p class="form-control-static"><?php echo $row["name"]; ?></p>
+                        <label>OrderNumber</label>
+                        <p class="form-control-static"><?php echo $row["orderNumber"]; ?></p>
                     </div>
                     <div class="form-group">
-                        <label>Address</label>
-                        <p class="form-control-static"><?php echo $row["address"]; ?></p>
+                        <label>OrderDate</label>
+                        <p class="form-control-static"><?php echo $row["orderDate"]; ?></p>
                     </div>
                     <div class="form-group">
-                        <label>Salary</label>
-                        <p class="form-control-static"><?php echo $row["salary"]; ?></p>
+                        <label>OrderLineNumber</label>
+                        <p class="form-control-static"><?php echo $row["orderLineNumber"]; ?></p>
                     </div>
+                    <div class="form-group">
+                        <label>productName</label>
+                        <p class="form-control-static"><?php echo $row["productName"]; ?></p>
+                    </div>
+                    <div class="form-group">
+                        <label>quantityOrdered</label>
+                        <p class="form-control-static"><?php echo $row["quantityOrdered"]; ?></p>
+                    </div>
+                    <div class="form-group">
+                        <label>priceEach</label>
+                        <p class="form-control-static"><?php echo $row["priceEach"]; ?></p>
+                    </div>
+                    
                     <p><a href="index.php" class="btn btn-primary">Back</a></p>
                 </div>
             </div>        
