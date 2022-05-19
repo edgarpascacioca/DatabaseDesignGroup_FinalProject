@@ -5,15 +5,15 @@ if(isset($_POST["orderNumber"]) && !empty($_POST["orderNumber"])){
     require_once "config.php";
     
     // Prepare a delete statement
-    $sql = "DELETE FROM orderdetails WHERE orderNumber = ".$_POST['orderNumber']." AND productCode = '".$_POST['productCode']."'";
+    $sql = "DELETE FROM orderdetails WHERE orderNumber = ? AND productCode = ?";
     
     if($stmt = mysqli_prepare($link, $sql)){
         // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "is", $param_orderNumber, $param_productCode);
+        mysqli_stmt_bind_param($stmt, "is", $p1, $p2);
         
         // Set parameters
-        $param_orderNumber = trim($_POST["orderNumber"]);
-        $param_productCode = trim($_POST["productCode"]);
+        $p1 = trim($_POST["orderNumber"]);
+        $p2 = trim($_POST["productCode"]);
         
         // Attempt to execute the prepared statement
         if(mysqli_stmt_execute($stmt)){
@@ -63,7 +63,7 @@ if(isset($_POST["orderNumber"]) && !empty($_POST["orderNumber"])){
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="alert alert-danger fade in">
                             <input type="hidden" name="orderNumber" value="<?php echo trim($_GET["orderNumber"]); ?>"/>
-                            <input type="hidden" name="productCode" value="<?php echo trim($_GET["productCode"]); ?>"/>
+                            <input type="hidden" name = "productCode" value = "<?php echo trim($_GET["productCode"]);?>"/>
                             <p>Are you sure you want to delete this record?</p><br>
                             <p>
                                 <input type="submit" value="Yes" class="btn btn-danger">

@@ -1,7 +1,4 @@
 <?php
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
 // Check existence of id parameter before processing further
 if(isset($_GET["orderNumber"]) && !empty(trim($_GET["orderNumber"]))){
     // Include config file
@@ -9,34 +6,32 @@ if(isset($_GET["orderNumber"]) && !empty(trim($_GET["orderNumber"]))){
     
     // Prepare a select statement
     $sql = "SELECT
-    orderNumber,
-    orderDate,
-    orderLineNumber,
-    productName,
-    quantityOrdered,
-    priceEach
-FROM
-    orders
-INNER JOIN
-    orderdetails USING (orderNumber)
-INNER JOIN
-    products USING (productCode)
-WHERE
-orderNumber=".$_GET['orderNumber']." AND productCode='".$_GET['productCode']."'";
-    
+            orderNumber,
+            orderDate,
+            orderLineNumber,
+            productName,
+            quantityOrdered,
+            priceEach
+        FROM
+            orders
+        INNER JOIN
+            orderdetails USING (orderNumber)
+        INNER JOIN
+            products USING (productCode)
+        WHERE 
+            orderNumber = ? AND productCode = ?";
+
     if($stmt = mysqli_prepare($link, $sql)){
-//$stmt = mysqli_prepare($link, $sql);
-$p1 = trim($_GET["orderNumber"]);
-$p2 = trim($_GET["productCode"]);
-        // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "is", $p1,$p2);
         
         // Set parameters
+        $p1 = trim($_GET["orderNumber"]);
+        $p2 = trim($_GET["productCode"]);
         
+        // Bind variables to the prepared statement as parameters
+        mysqli_stmt_bind_param($stmt, "is", $p1, $p2);
         
         // Attempt to execute the prepared statement
-        //if(mysqli_stmt_execute($stmt)){
-        mysqli_stmt_execute($stmt);
+        if(mysqli_stmt_execute($stmt)){
             $result = mysqli_stmt_get_result($stmt);
     
             if(mysqli_num_rows($result) == 1){
@@ -45,14 +40,18 @@ $p2 = trim($_GET["productCode"]);
                 $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
                 
                 // Retrieve individual field value
-                $name = $row["orderNumber"];
-                $address = $row["orderDate"];
-                $salary = $row["orderLineNumber"];
-            //} else{
+                $orderNumber = $row["orderNumber"];
+                $orderDate = $row["orderDate"];
+                $orderLineNumber = $row["orderLineNumber"];
+                $productName = $row["productName"];
+                $quantityOrdered = $row["quantityOrdered"];
+                $priceEach = $row["priceEach"];
+                
+            } else{
                 // URL doesn't contain valid id parameter. Redirect to error page
-              //  header("location: error.php");
-               // exit();
-            //}
+                header("location: error.php");
+                exit();
+            }
             
         } else{
             echo "Oops! Something went wrong. Please try again later.";
@@ -92,30 +91,30 @@ $p2 = trim($_GET["productCode"]);
                         <h1>View Record</h1>
                     </div>
                     <div class="form-group">
-                        <label>OrderNumber</label>
+                        <label>Order Number</label>
                         <p class="form-control-static"><?php echo $row["orderNumber"]; ?></p>
                     </div>
+
                     <div class="form-group">
-                        <label>OrderDate</label>
+                        <label>Order Date</label>
                         <p class="form-control-static"><?php echo $row["orderDate"]; ?></p>
                     </div>
                     <div class="form-group">
-                        <label>OrderLineNumber</label>
+                        <label>Order Line Number</label>
                         <p class="form-control-static"><?php echo $row["orderLineNumber"]; ?></p>
                     </div>
                     <div class="form-group">
-                        <label>productName</label>
+                        <label>Product Name</label>
                         <p class="form-control-static"><?php echo $row["productName"]; ?></p>
                     </div>
                     <div class="form-group">
-                        <label>quantityOrdered</label>
+                        <label>Quantity Ordered</label>
                         <p class="form-control-static"><?php echo $row["quantityOrdered"]; ?></p>
                     </div>
                     <div class="form-group">
-                        <label>priceEach</label>
+                        <label>Price Each</label>
                         <p class="form-control-static"><?php echo $row["priceEach"]; ?></p>
                     </div>
-                    
                     <p><a href="index.php" class="btn btn-primary">Back</a></p>
                 </div>
             </div>        
